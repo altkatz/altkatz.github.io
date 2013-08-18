@@ -38,9 +38,9 @@ Thanks to <a href="http://es5.github.io/#x10.2">Lexical environment</a> (commonl
 
 <div class="org-src-container">
 
-<pre class="src src-javascript">var wrapper = function(input1){
-  return function(input2){
-    return function(){
+<pre class="src src-js"><span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">wrapper</span> = <span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">input1</span>){
+  <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">input2</span>){
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(){
       task(input1,input2);
     }
   }
@@ -54,19 +54,20 @@ Then we can 'lock' the input argument one after another:
 
 <div class="org-src-container">
 
-<pre class="src src-javascript">// sloppy jquery example
+<pre class="src src-js"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">sloppy jquery example</span>
 
-$("input:eq(0)").change(function(){
+$(<span style="color: #CC9393;">"input:eq(0)"</span>).change(<span style="color: #F0DFAF; font-weight: bold;">function</span>(){
 
-  var input1 = $(this).val();
-  var partial1 = wrapper(input1); // input1 is now 'remembered' in partial1
-  // do something prepared for the second input
+  <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">input1</span> = $(<span style="color: #BFEBBF;">this</span>).val();
+  <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">partial1</span> = wrapper(input1); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">input1 is now 'remembered'</span>
 
-  $("input:eq(1)").change(function(){
-    var input2 = $(this).val();
-    var partial2 = partial1(input2); // dejavu
+  <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">do something prepared for the second input</span>
 
-    $(this).on("some event",partial2);// execute task after an event
+  $(<span style="color: #CC9393;">"input:eq(1)"</span>).change(<span style="color: #F0DFAF; font-weight: bold;">function</span>(){
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">input2</span> = $(<span style="color: #BFEBBF;">this</span>).val();
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">partial2</span> = partial1(input2); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">dejavu</span>
+
+    $(<span style="color: #BFEBBF;">this</span>).on(<span style="color: #CC9393;">"some event"</span>,partial2); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">execute task after an event</span>
   });
 
 });
@@ -79,11 +80,11 @@ However, this approach is not very flexible, since if you need more input to dea
 
 <div class="org-src-container">
 
-<pre class="src src-javascript">function partial( fn /*, args...*/) {
-    var slice = [].slice;
-    var args = slice.call( arguments, 1 ); // now the first argument is remembered
-    return function(){
-        return fn.apply( this, args.concat( slice.call( arguments ) ) );
+<pre class="src src-javascript"><span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">partial</span>( <span style="color: #DFAF8F;">fn</span> <span style="color: #5F7F5F;">/*</span><span style="color: #7F9F7F;">, args...*/</span>) {
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">slice</span> = [].slice;
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">args</span> = slice.call( <span style="color: #BFEBBF;">arguments</span>, 1 ); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">now the first argument is remember</span><span style="color: #DC8CC3; background-color: #3F3F3F;">ed</span>
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(){
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> fn.apply( <span style="color: #BFEBBF;">this</span>, args.concat( slice.call( <span style="color: #BFEBBF;">arguments</span> ) ) );
     }
 }
 </pre>
@@ -94,7 +95,7 @@ However, this approach is not very flexible, since if you need more input to dea
     <div> 
       <div class="post-meta">
         <span title="post date" class="post-info">2013-08-14</span>
-        <span title="last modification date" class="post-info">2013-08-17</span>
+        <span title="last modification date" class="post-info">2013-08-18</span>
         <span title="tags" class="post-info"><a href="/tags/javascript/">Javascript</a></span>
         <span title="author" class="post-info">chris</span>
       </div>
@@ -116,6 +117,16 @@ However, this approach is not very flexible, since if you need more input to dea
         <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
         <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
       </section>
+      <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-43259484-1']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+      </script>
       <div class="footer">
         <p>Generated by <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.0.7)</p>
         <p> 
