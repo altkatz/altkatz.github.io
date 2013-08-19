@@ -80,11 +80,11 @@ However, this approach is not very flexible, since if you need more input to dea
 
 <div class="org-src-container">
 
-<pre class="src src-javascript"><span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">partial</span>( <span style="color: #DFAF8F;">fn</span> <span style="color: #5F7F5F;">/*</span><span style="color: #7F9F7F;">, args...*/</span>) {
+<pre class="src src-javascript"><span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">partial</span>(<span style="color: #DFAF8F;">task</span>) {
     <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">slice</span> = [].slice;
-    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">args</span> = slice.call( <span style="color: #BFEBBF;">arguments</span>, 1 ); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">now the first argument is remember</span><span style="color: #DC8CC3; background-color: #3F3F3F;">ed</span>
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">args</span> = slice.call(<span style="color: #BFEBBF;">arguments</span>, 1); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">now the first argument is 'locked'</span>
     <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(){
-        <span style="color: #F0DFAF; font-weight: bold;">return</span> fn.apply( <span style="color: #BFEBBF;">this</span>, args.concat( slice.call( <span style="color: #BFEBBF;">arguments</span> ) ) );
+        <span style="color: #F0DFAF; font-weight: bold;">return</span> task.apply(<span style="color: #BFEBBF;">this</span>, args.concat(slice.call(<span style="color: #BFEBBF;">arguments</span>)));
     }
 }
 </pre>
@@ -95,7 +95,7 @@ However, this approach is not very flexible, since if you need more input to dea
     <div> 
       <div class="post-meta">
         <span title="post date" class="post-info">2013-08-14</span>
-        <span title="last modification date" class="post-info">2013-08-18</span>
+        <span title="last modification date" class="post-info">2013-08-19</span>
         <span title="tags" class="post-info"><a href="/tags/javascript/">Javascript</a></span>
         <span title="author" class="post-info">chris</span>
       </div>
