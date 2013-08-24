@@ -78,16 +78,49 @@ $(<span style="color: #CC9393;">"input:eq(0)"</span>).change(<span style="color:
 </div>
 
 <p>
-However, this approach is not very flexible, since if you need more input to deal with, you need to write more deeply nested functions. The good news is, an array-like "arguments" object is accessible inside its function being called, and we can call "apply" with an array of arguments on a function. Here is a more flexible version:
+However, this approach is not very neat. If you have more input arguments to deal with, you need to write more deeply nested functions. The good news is, an array-like "arguments" object is accessible inside its function being called, and we can call "apply" with an array of arguments on a function. Here is a more flexible version:
 </p>
 
 <div class="org-src-container">
 
 <pre class="src src-javascript"><span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">partial</span>(<span style="color: #DFAF8F;">task</span>) {
+  <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">slice</span> = [].slice; <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">transform (and slice) the arguments into a real array</span>
+  <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">args</span> = slice.call(<span style="color: #BFEBBF;">arguments</span>, 1); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">arguments sliced off the first argumen</span><span style="color: #DC8CC3; background-color: #3F3F3F;">t 'task'</span>
+  <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(){
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> task.apply(<span style="color: #BFEBBF;">this</span>, args.concat(slice.call(<span style="color: #BFEBBF;">arguments</span>)));
+      <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">call task(previously stored in closure) with the</span>
+      <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">args(previously stored in closure), plus the 'current' arguments(apply </span><span style="color: #DC8CC3; background-color: #3F3F3F;">'this')</span>
+  }
+}
+</pre>
+</div>
+
+<p>
+now we can have a slightly more flexible solution:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript"><span style="color: #5F7F5F;">//</span><span style="color: #7F9F7F;">... same code</span>
+<span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">partial1</span> = partial(<span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">a</span>,<span style="color: #DFAF8F;">b</span>){
+  <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(){
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> task(a,b)
+  }
+},input1);
+<span style="color: #5F7F5F;">//</span><span style="color: #7F9F7F;">... same code</span>
+</pre>
+</div>
+
+<p>
+with a minor modification, we can apply the arguments from right to left:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-javascript"><span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">partialRight</span>(<span style="color: #DFAF8F;">task</span>){
     <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">slice</span> = [].slice;
-    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">args</span> = slice.call(<span style="color: #BFEBBF;">arguments</span>, 1); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">now the first argument is 'locked'</span>
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">args</span> = slice.call(<span style="color: #BFEBBF;">arguments</span>, 1);
     <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(){
-        <span style="color: #F0DFAF; font-weight: bold;">return</span> task.apply(<span style="color: #BFEBBF;">this</span>, args.concat(slice.call(<span style="color: #BFEBBF;">arguments</span>)));
+      <span style="color: #F0DFAF; font-weight: bold;">return</span> task.apply(<span style="color: #BFEBBF;">this</span>, slice.call(<span style="color: #BFEBBF;">arguments</span>).concat(args)); <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">reversed c</span><span style="color: #DC8CC3; background-color: #3F3F3F;">oncat</span>
     }
 }
 </pre>
@@ -98,7 +131,7 @@ However, this approach is not very flexible, since if you need more input to dea
     <div> 
       <div class="post-meta">
         <span title="post date" class="post-info">2013-08-14</span>
-        <span title="last modification date" class="post-info">2013-08-19</span>
+        <span title="last modification date" class="post-info">2013-08-25</span>
         <span title="tags" class="post-info"><a href="/tags/javascript/">Javascript</a></span>
         <span title="author" class="post-info">chris</span>
       </div>
