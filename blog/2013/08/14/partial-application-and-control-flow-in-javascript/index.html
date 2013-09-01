@@ -126,12 +126,99 @@ with a minor modification, we can apply the arguments from right to left:
 </pre>
 </div>
 
+<p>
+Another example of partial application in ECMA5 javascript is 'bind', for it returns a function in which 'this'(or even more arguments) is already partially applied.
+</p>
+
+<p>
+Next, let's take a look at a real world example, <a href="https://github.com/mbostock/queue">queue</a>, which tries to mimic <a href="https://github.com/caolan/async">async</a> in the minimal way:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-javascript"><span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">node js example: stat two files</span>
+<span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">queue</span> = require(<span style="color: #CC9393;">"./queue"</span>);
+queue()
+  .defer(fs.stat, <span style="color: #CC9393;">"./Makefile"</span>)
+  .defer(fs.stat,<span style="color: #CC9393;">"./package.json"</span>)
+  .await(<span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">error</span>, <span style="color: #DFAF8F;">file1</span>, <span style="color: #DFAF8F;">file2</span>) { console.log(file1, file2); });
+</pre>
+</div>
+
+<p>
+and the related source code of queue:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-javascript"><span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">pop</span>() {
+  <span style="color: #F0DFAF; font-weight: bold;">while</span> (popping = started &lt; tasks.length &amp;&amp; active &lt; parallelism) {
+    <span style="color: #F0DFAF; font-weight: bold;">var</span> <span style="color: #DFAF8F;">i</span> = started++,
+        t = tasks[i],
+        a = slice.call(t, 1);
+    a.push(callback(i));
+    ++active;
+    t[0].apply(<span style="color: #BFEBBF;">null</span>, a);
+  }
+}
+
+<span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">callback</span>(<span style="color: #DFAF8F;">i</span>) {
+  <span style="color: #F0DFAF; font-weight: bold;">return</span> <span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">e</span>, <span style="color: #DFAF8F;">r</span>) {
+    --active;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> (error != <span style="color: #BFEBBF;">null</span>) <span style="color: #F0DFAF; font-weight: bold;">return</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> (e != <span style="color: #BFEBBF;">null</span>) {
+      error = e; <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">ignore new tasks and squelch active callbacks</span>
+      started = remaining = <span style="color: #BFEBBF;">NaN</span>; <span style="color: #5F7F5F;">// </span><span style="color: #7F9F7F;">stop queued tasks from starting</span>
+      notify();
+    } <span style="color: #F0DFAF; font-weight: bold;">else</span> {
+      tasks[i] = r;
+      <span style="color: #F0DFAF; font-weight: bold;">if</span> (--remaining) popping || pop();
+      <span style="color: #F0DFAF; font-weight: bold;">else</span> notify();
+    }
+  };
+}
+
+<span style="color: #F0DFAF; font-weight: bold;">function</span> <span style="color: #93E0E3;">notify</span>() {
+  <span style="color: #F0DFAF; font-weight: bold;">if</span> (error != <span style="color: #BFEBBF;">null</span>) await(error);
+  <span style="color: #F0DFAF; font-weight: bold;">else</span> <span style="color: #F0DFAF; font-weight: bold;">if</span> (all) await(error, tasks);
+  <span style="color: #F0DFAF; font-weight: bold;">else</span> await.apply(<span style="color: #BFEBBF;">null</span>, [error].concat(tasks));
+}
+
+<span style="color: #F0DFAF; font-weight: bold;">return</span> q = {
+  <span style="color: #93E0E3;">defer</span>: <span style="color: #F0DFAF; font-weight: bold;">function</span>() {
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> (!error) {
+      tasks.push(<span style="color: #BFEBBF;">arguments</span>);
+      ++remaining;
+      pop();
+    }
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> q;
+  },
+  <span style="color: #93E0E3;">await</span>: <span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">f</span>) {
+    await = f;
+    all = <span style="color: #BFEBBF;">false</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> (!remaining) notify();
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> q;
+  },
+  <span style="color: #93E0E3;">awaitAll</span>: <span style="color: #F0DFAF; font-weight: bold;">function</span>(<span style="color: #DFAF8F;">f</span>) {
+    await = f;
+    all = <span style="color: #BFEBBF;">true</span>;
+    <span style="color: #F0DFAF; font-weight: bold;">if</span> (!remaining) notify();
+    <span style="color: #F0DFAF; font-weight: bold;">return</span> q;
+  }
+};
+</pre>
+</div>
+
+<p>
+The basic idea is we enqueue a task in defer, then apply the argument partially, then call await to actually execute the task.
+</p>
+
       </div>
     </div>
     <div> 
       <div class="post-meta">
         <span title="post date" class="post-info">2013-08-14</span>
-        <span title="last modification date" class="post-info">2013-08-26</span>
+        <span title="last modification date" class="post-info">2013-09-01</span>
         <span title="tags" class="post-info"><a href="/tags/javascript/">Javascript</a></span>
         <span title="author" class="post-info">chris</span>
       </div>
